@@ -1,0 +1,119 @@
+.topbar {
+  gap: 32px;
+}
+.topbar nav {
+  gap: 24px;
+}
+.theme-picker {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  margin-left: auto;
+  font-size: 10px;
+  color: #7d8d79;
+  white-space: nowrap;
+}
+.theme-picker select {
+  font-size: 10px;
+  background: #f4f7f0;
+  border-color: #dfe5d7;
+  padding: 7px 9px;
+  border-radius: 6px;
+  cursor: pointer;
+}
+.local-status {
+  margin-left: 0;
+}
+.app-shell[data-theme="wii"] {
+  --teal: #267fa5;
+  --orange: #f3a343;
+  --line: #dce7e8;
+  background: #f6fbfc;
+}
+.app-shell[data-theme="wii"] .brand-mark {
+  background: #369bc5;
+}
+.app-shell[data-theme="wii"] .play-button {
+  background: #267fa5;
+}
+.app-shell[data-theme="wii"] .view-tabs .selected {
+  background: #e3f2f9;
+  color: #267fa5;
+}
+.app-shell[data-theme="open"] {
+  --teal: #224cb0;
+  --orange: #bccb45;
+  --line: #dce2ed;
+  background: #f6f8fc;
+}
+.app-shell[data-theme="open"] .brand-mark {
+  background: #224cb0;
+}
+.app-shell[data-theme="open"] .play-button {
+  background: #224cb0;
+}
+.app-shell[data-theme="open"] .view-tabs .selected {
+  background: #e9eefb;
+  color: #224cb0;
+}
+.app-shell[data-theme="neon"] {
+  --teal: #7954a5;
+  --orange: #db78b8;
+  --line: #e7dfed;
+  background: #f9f6fc;
+}
+.app-shell[data-theme="neon"] .brand-mark {
+  background: #7954a5;
+}
+.app-shell[data-theme="neon"] .play-button {
+  background: #7954a5;
+}
+.app-shell[data-theme="neon"] .view-tabs .selected {
+  background: #f0e6f8;
+  color: #7954a5;
+}
+.app-shell[data-theme="club"] {
+  --teal: #756341;
+  --orange: #bd8451;
+  --line: #e8e2d6;
+  background: #faf8f1;
+}
+.app-shell[data-theme="club"] .brand-mark {
+  background: #756341;
+}
+.app-shell[data-theme="club"] .play-button {
+  background: #756341;
+}
+.app-shell[data-theme="club"] .view-tabs .selected {
+  background: #eee8dc;
+  color: #756341;
+}
+.app-shell[data-theme="wii"] .hero h1 em {
+  color: #267fa5;
+}
+.app-shell[data-theme="open"] .hero h1 em {
+  color: #224cb0;
+}
+.app-shell[data-theme="neon"] .hero h1 em {
+  color: #7954a5;
+}
+.app-shell[data-theme="club"] .hero h1 em {
+  color: #756341;
+}
+.view-label {
+  padding: 5px 7px;
+  border-radius: 4px;
+  background: #122b2470;
+}
+.orbit-hint {
+  background: #122b2450;
+  padding: 5px 7px;
+  border-radius: 4px;
+  color: #e7eee0;
+}
+.scene-view {
+  isolation: isolate;
+}
+.app-shell[data-theme="mishka"]{--teal:#738054;--orange:#b39775;--line:#e2dfd2;background:#f7f5ee}.app-shell[data-theme="mishka"] .brand-mark,.app-shell[data-theme="mishka"] .play-button{background:#738054}.app-shell[data-theme="mishka"] .view-tabs .selected{background:#e9eddf;color:#738054}.app-shell[data-theme="mishka"] .hero h1 em{color:#738054}.app-shell[data-theme="mishka"] .hero-art{mix-blend-mode:normal;right:0;width:78%}.app-shell[data-theme="mishka"] .hero::after{background:linear-gradient(90deg,#f3f1e9 0%,#f3f1e9 23%,#f3f1e900 64%)}
+
+.app-shell{--player-one:#ed8658;--player-two:#64bfb0}.app-shell[data-theme="wii"]{--player-one:#fa714c;--player-two:#429ee8}.app-shell[data-theme="open"]{--player-one:#cfa957;--player-two:#67b7cf}.app-shell[data-theme="neon"]{--player-one:#ff8bc2;--player-two:#55e0db}.app-shell[data-theme="club"]{--player-one:#c5924f;--player-two:#71a895}.app-shell[data-theme="mishka"]{--player-one:#94aa58;--player-two:#b7987f}.orange-dot{background:var(--player-one)}.teal-dot{background:var(--player-two)}

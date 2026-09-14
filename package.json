@@ -1,0 +1,38 @@
+{
+  "name": "rallylab",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "bun scripts/dev.ts",
+    "build": "bun --bun vite build --config config/vite.ts",
+    "check": "bun scripts/structure.ts && bunx tsgo -p app/tsconfig.json && bunx tsgo -p scripts/tsconfig.json && bunx tsgo -p config/tsconfig.tools.json && bunx oxlint -c config/oxlint.json --type-aware --deny-warnings app/src scripts config/vite.ts && bun test scripts && uv run ruff check backend && uv run pyright && uv run pytest",
+    "test": "uv run pytest",
+    "setup": "bun scripts/setup.ts",
+    "format": "bunx oxfmt --write app/src scripts config && uv run ruff format backend",
+    "samples": "bun scripts/samples.ts"
+  },
+  "dependencies": {
+    "@fontsource-variable/dm-sans": "^5.3.0",
+    "@fontsource-variable/manrope": "^5.3.0",
+    "lucide-react": "^1.46.0",
+    "react": "^19.3.0",
+    "react-dom": "^19.3.0",
+    "three": "^0.186.0",
+    "type-fest": "^5.9.0",
+    "zod": "^4.6.5"
+  },
+  "devDependencies": {
+    "@types/bun": "^1.4.2",
+    "@types/react": "^19.3.0",
+    "@types/react-dom": "^19.3.0",
+    "@types/three": "^0.186.0",
+    "@typescript/native-preview": "^7.0.0-dev.20260707.2",
+    "@vitejs/plugin-react": "^6.1.1",
+    "oxfmt": "^0.68.0",
+    "oxlint": "^1.83.0",
+    "oxlint-tsgolint": "^7.0.2001",
+    "vite": "^8.3.0"
+  },
+  "license": "AGPL-3.0-only"
+}

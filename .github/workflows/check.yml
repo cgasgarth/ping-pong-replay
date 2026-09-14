@@ -1,0 +1,19 @@
+name: Validate
+on: [push, pull_request]
+permissions:
+  contents: read
+jobs:
+  check:
+    runs-on: macos-15
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v7
+      - uses: oven-sh/setup-bun@v2
+      - uses: astral-sh/setup-uv@v10
+        with:
+          python-version: '3.14'
+      - run: bun install --frozen-lockfile
+      - run: uv sync --locked
+      - run: bun run check
+      - run: bun run build
+      - run: xcrun swiftc -swift-version 6 -strict-concurrency=complete -warnings-as-errors -typecheck native/Pose.swift

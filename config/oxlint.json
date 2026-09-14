@@ -1,0 +1,88 @@
+{
+  "plugins": [
+    "typescript",
+    "react",
+    "react-hooks",
+    "jsx-a11y",
+    "unicorn",
+    "import",
+    "promise"
+  ],
+  "categories": {
+    "correctness": "error",
+    "suspicious": "error",
+    "pedantic": "error",
+    "perf": "error"
+  },
+  "rules": {
+    "max-lines": [
+      "error",
+      {
+        "max": 600,
+        "skipBlankLines": false,
+        "skipComments": false
+      }
+    ],
+    "typescript/no-explicit-any": "error",
+    "typescript/no-non-null-assertion": "error",
+    "typescript/no-unsafe-assignment": "error",
+    "typescript/no-unsafe-call": "error",
+    "typescript/no-unsafe-member-access": "error",
+    "typescript/no-unsafe-return": "error",
+    "typescript/no-unsafe-argument": "error",
+    "typescript/strict-boolean-expressions": "error",
+    "typescript/no-floating-promises": "error",
+    "typescript/switch-exhaustiveness-check": "error",
+    "react/react-in-jsx-scope": "off",
+    "typescript/prefer-readonly-parameter-types": [
+      "error",
+      {
+        "checkParameterProperties": true,
+        "ignoreInferredTypes": true,
+        "treatMethodsAsReadonly": true,
+        "allow": [
+          {
+            "from": "lib",
+            "name": "HTMLElement"
+          },
+          {
+            "from": "lib",
+            "name": "HTMLVideoElement"
+          },
+          {
+            "from": "package",
+            "package": "zod",
+            "name": "ZodType"
+          },
+          {
+            "from": "lib",
+            "name": "RequestInit"
+          },
+          {
+            "from": "package",
+            "package": "three",
+            "name": "Group"
+          },
+          "RequestInit"
+        ]
+      }
+    ],
+    "import/no-unassigned-import": [
+      "error",
+      {
+        "allow": [
+          "**/*.css",
+          "@fontsource-variable/**"
+        ]
+      }
+    ],
+    "max-lines-per-function": [
+      "error",
+      {
+        "max": 350,
+        "skipBlankLines": false,
+        "skipComments": false
+      }
+    ]
+  }
+}

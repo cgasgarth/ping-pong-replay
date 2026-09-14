@@ -1,0 +1,54 @@
+[
+  {
+    "id": "rally-one",
+    "title": "France Juniors · 60 fps rally",
+    "file": "france-juniors-60.mp4",
+    "source": "https://www.youtube.com/watch?v=zi8GB78upXw",
+    "start": 275,
+    "end": 287,
+    "corners": [
+      {
+        "x": 0.3828125,
+        "y": 0.5740740740740741
+      },
+      {
+        "x": 0.409375,
+        "y": 0.3731481481481482
+      },
+      {
+        "x": 0.5885416666666666,
+        "y": 0.375
+      },
+      {
+        "x": 0.6135416666666667,
+        "y": 0.5740740740740741
+      }
+    ]
+  },
+  {
+    "id": "rally-two",
+    "title": "France Juniors · Return to court",
+    "file": "france-juniors-two-60.mp4",
+    "source": "https://www.youtube.com/watch?v=zi8GB78upXw",
+    "start": 325,
+    "end": 337,
+    "corners": [
+      {
+        "x": 0.3828125,
+        "y": 0.5740740740740741
+      },
+      {
+        "x": 0.409375,
+        "y": 0.3731481481481482
+      },
+      {
+        "x": 0.5885416666666666,
+        "y": 0.375
+      },
+      {
+        "x": 0.6135416666666667,
+        "y": 0.5740740740740741
+      }
+    ]
+  }
+]

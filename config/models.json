@@ -1,0 +1,53 @@
+[
+  {
+    "path": ".data/models/blurball.ckpt",
+    "url": "https://raw.githubusercontent.com/mrzkp/blurball/5ad0ed03ab115bf7d32ccfd69aba503e6d636c13/blurball_best",
+    "sha256": "fb2d6941735369f0eec3a4abc374ce648a990a7a736185252b88f0b27c1fa34f"
+  },
+  {
+    "path": ".data/vendor/blurball.py",
+    "url": "https://raw.githubusercontent.com/mrzkp/blurball/5ad0ed03ab115bf7d32ccfd69aba503e6d636c13/src/models/blurball.py",
+    "sha256": "c7db7409883618376db35d38fec691bb85c713bcbfe8f75d0771653165c88ec0"
+  },
+  {
+    "path": ".data/vendor/blurball.yaml",
+    "url": "https://raw.githubusercontent.com/mrzkp/blurball/5ad0ed03ab115bf7d32ccfd69aba503e6d636c13/src/configs/model/blurball.yaml",
+    "sha256": "6c6501405d5d0165be43d9b215b2b5b12dc8eb5c79fba7740d4633b800152e0f"
+  },
+  {
+    "path": ".data/vendor/uplifting/model.py",
+    "url": "https://raw.githubusercontent.com/KieDani/UpliftingTableTennis/1a64bf6488f3a142f733e73e8de00bfecf044b23/uplifting/model.py",
+    "sha256": "da83fb2462924168bed4fb6bf98c26507cae8638d7cccac0c5fccb1cb53e3eba"
+  },
+  {
+    "path": ".data/vendor/uplifting/helper.py",
+    "url": "https://raw.githubusercontent.com/KieDani/UpliftingTableTennis/1a64bf6488f3a142f733e73e8de00bfecf044b23/uplifting/helper.py",
+    "sha256": "ad5df71c21c75c34d75ad8ba44f0bc4f8d01a6465d48e24c19388be49a2a1e53"
+  },
+  {
+    "path": ".data/vendor/tabledetection/helper_tabledetection.py",
+    "url": "https://raw.githubusercontent.com/KieDani/UpliftingTableTennis/1a64bf6488f3a142f733e73e8de00bfecf044b23/tabledetection/helper_tabledetection.py",
+    "sha256": "b9339dced3545d585db314d0e2aa71dfc827059d79b7f4644a9752b200d95182"
+  },
+  {
+    "path": ".data/vendor/paths.py",
+    "url": "https://raw.githubusercontent.com/KieDani/UpliftingTableTennis/1a64bf6488f3a142f733e73e8de00bfecf044b23/paths.py",
+    "sha256": "edca24dceab4aa449166f1fc84e5d1b0da46448d72b065409d853e195a1960ed"
+  },
+  {
+    "path": ".data/models/uplift.pt",
+    "url": "https://mediastore.rz.uni-augsburg.de/fcgi/do?get=TL7oQRStHG",
+    "member": "weights/inference_uplifting/ours/model.pt",
+    "sha256": "fde58a8d07da9945220253ffc33acf26de3e83cb185ebe0dce44ea7835db1c77"
+  },
+  {
+    "path": ".data/models/yolo26s-pose.pt",
+    "url": "https://github.com/ultralytics/assets/releases/download/v8.4.0/yolo26s-pose.pt",
+    "sha256": "a083adb42303728ae14c4bd6bd56d80da46f82fb2564dbd6f31dcc92ea321646"
+  },
+  {
+    "path": ".data/models/yolo26n-cls.pt",
+    "url": "https://github.com/ultralytics/assets/releases/download/v8.4.0/yolo26n-cls.pt",
+    "sha256": "0dd6f8dbc448870ac98a3cbb7156f923f7ce21fed3755d4019169ffffd279e81"
+  }
+]

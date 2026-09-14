@@ -2,30 +2,30 @@ import type { ReadonlyDeep } from "type-fest";
 import { z } from "zod";
 
 const joint = z.object({
-    confidence: z.number(),
-    u: z.number(),
-    v: z.number(),
-    x: z.number(),
-    y: z.number(),
-    z: z.number(),
-  });
+  confidence: z.number(),
+  u: z.number(),
+  v: z.number(),
+  x: z.number(),
+  y: z.number(),
+  z: z.number(),
+});
 const player = z.object({
-    elbow: z.number().nullable(),
-    joints: z.array(joint),
-    knee: z.number().nullable(),
-    player: z.number(),
-    state: z.enum(["observed", "partial", "held"]),
-    stance: z.number().nullable(),
-  });
+  elbow: z.number().nullable(),
+  joints: z.array(joint),
+  knee: z.number().nullable(),
+  player: z.number(),
+  state: z.enum(["observed", "partial", "held"]),
+  stance: z.number().nullable(),
+});
 const ball = z.object({
-    confidence: z.number(),
-    mode: z.enum(["learned-3d", "flight-fit", "table-plane"]),
-    u: z.number(),
-    v: z.number(),
-    x: z.number(),
-    y: z.number(),
-    z: z.number(),
-  });
+  confidence: z.number(),
+  mode: z.enum(["learned-3d", "flight-fit", "table-plane"]),
+  u: z.number(),
+  v: z.number(),
+  x: z.number(),
+  y: z.number(),
+  z: z.number(),
+});
 const frame = z.object({ ball: ball.nullable(), players: z.array(player), time: z.number() });
 export const rallySchema = z.object({
   confidence: z.number(),
@@ -36,22 +36,22 @@ export const rallySchema = z.object({
   winner: z.number().nullable(),
 });
 const stats = z.object({
-    distance: z.number(),
-    elbow_mean: z.number().nullable(),
-    knee_mean: z.number().nullable(),
-    samples: z.number(),
-    stance_mean: z.number().nullable(),
-  });
+  distance: z.number(),
+  elbow_mean: z.number().nullable(),
+  knee_mean: z.number().nullable(),
+  samples: z.number(),
+  stance_mean: z.number().nullable(),
+});
 const analysis = z.object({
-    ball_coverage: z.number(),
-    device: z.string(),
-    elapsed: z.number(),
-    frames: z.array(frame),
-    notes: z.array(z.string()),
-    pose_coverage: z.number(),
-    rallies: z.array(rallySchema),
-    stats: z.array(stats),
-  });
+  ball_coverage: z.number(),
+  device: z.string(),
+  elapsed: z.number(),
+  frames: z.array(frame),
+  notes: z.array(z.string()),
+  pose_coverage: z.number(),
+  rallies: z.array(rallySchema),
+  stats: z.array(stats),
+});
 export const replaySchema = z.object({
   analysis: analysis.nullable(),
   corners: z.array(z.object({ x: z.number(), y: z.number() })),
@@ -81,8 +81,13 @@ export async function request<T>(
   const response = await fetch(`/api${path}`, options);
   const data: unknown = await response.json();
   if (!response.ok) {
-    const error = z.object({ detail: z.string() }).safeParse(data);
-    throw new Error(error.success ? error.data.detail : `Request failed (${response.status})`);
+    const error = z
+      .object({ detail: z.union([z.string(), z.array(z.object({ msg: z.string() }))]) })
+      .safeParse(data);
+    const detail = error.success ? error.data.detail : `Request failed (${response.status})`;
+    throw new Error(
+      typeof detail === "string" ? detail : detail.map((item) => item.msg).join("; "),
+    );
   }
   return schema.parse(data);
 }

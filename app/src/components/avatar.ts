@@ -161,7 +161,7 @@ export function createAvatar(initial: PlayerPose, theme: ThemeId): AvatarRig {
             : [0.105, 0.13, 0.11];
       head.scale.set(headSize[0], headSize[1], headSize[2]);
       features.position.copy(head.position);
-      features.rotation.y = Math.atan2(bodyForward.x, bodyForward.z);
+      features.rotation.y = Math.atan2(-head.position.x, -head.position.z);
     }
     for (let index = 0; index < 2; index += 1) {
       const foot = points[15 + index],

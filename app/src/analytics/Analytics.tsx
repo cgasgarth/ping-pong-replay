@@ -51,8 +51,9 @@ export function Analytics({ replay }: { readonly replay: Replay }) {
           <span>Ball speed · 95th percentile</span>
           <strong>
             {velocity === null ? "—" : speedValue(velocity, unit).toFixed(0)}
-            <small> {unit === "mph" ? "mph" : "km/h"}</small>
+            {velocity !== null && <small> {unit === "mph" ? "mph" : "km/h"}</small>}
           </strong>
+          {velocity === null && <small>Not enough supported 3D motion</small>}
         </div>
         <div>
           <Radar size={19} />
@@ -190,8 +191,8 @@ export function Analytics({ replay }: { readonly replay: Replay }) {
             ))}
           </svg>
           <p className="chart-footnote">
-            <ArrowUpRight size={12} /> Joint ranges show the middle 80% of observations. Hand speed
-            is the 95th percentile, not racket speed.
+            <ArrowUpRight size={12} /> Joint ranges need 10 supported poses and show their middle
+            80%. Hand speed is the 95th percentile, not racket speed.
           </p>
         </article>
       </div>

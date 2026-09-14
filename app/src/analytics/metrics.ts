@@ -12,6 +12,7 @@ function percentile(values: readonly number[], fraction: number): number | null 
   return sorted[Math.floor((sorted.length - 1) * fraction)] ?? null;
 }
 function range(values: readonly number[]): readonly [number, number] | null {
+  if (values.length < 10) return null;
   const low = percentile(values, 0.1);
   const high = percentile(values, 0.9);
   return low === null || high === null ? null : [low, high];
@@ -65,7 +66,7 @@ function sampleMetrics(
     elbow: range(samples.flatMap((item) => (item.pose.elbow === null ? [] : [item.pose.elbow]))),
     knee: range(samples.flatMap((item) => (item.pose.knee === null ? [] : [item.pose.knee]))),
     wristSpeed: speeds.length >= 10 ? percentile(speeds, 0.95) : null,
-    lean: percentile(leans, 0.5),
+    lean: leans.length >= 10 ? percentile(leans, 0.5) : null,
     points,
     curve: samples.flatMap((item) =>
       item.pose.elbow === null ? [] : [{ time: item.time, angle: item.pose.elbow }],
@@ -83,6 +84,7 @@ export function playerMetrics(frames: readonly Frame[], player: number): PlayerM
 }
 export function ballSpeed(replay: Replay): number | null {
   const frames = replay.analysis?.frames ?? [];
+  const observations = frames.filter((frame) => frame.ball !== null).length;
   const speeds: number[] = [];
   for (let index = 1; index < frames.length; index += 1) {
     const frame = frames[index],
@@ -104,7 +106,9 @@ export function ballSpeed(replay: Replay): number | null {
     const speed = Math.hypot(ball.x - earlier.x, ball.y - earlier.y, ball.z - earlier.z) / dt;
     if (speed < 30) speeds.push(speed * 3.6);
   }
-  return speeds.length >= 10 ? percentile(speeds, 0.95) : null;
+  return speeds.length >= 30 && speeds.length / Math.max(1, observations) >= 0.25
+    ? percentile(speeds, 0.95)
+    : null;
 }
 
 export type SpeedUnit = "kmh" | "mph";

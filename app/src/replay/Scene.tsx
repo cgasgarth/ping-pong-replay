@@ -59,7 +59,7 @@ export function Scene({
     renderer.toneMappingExposure = 1.05;
     element.append(renderer.domElement);
     const camera = new PerspectiveCamera(40, 1, 0.01, 100);
-    camera.position.set(4.2, 3.3, 4.4);
+    camera.position.set(5.2, 4.1, 5.6);
     const controls = new OrbitControls(camera, renderer.domElement);
     controls.target.set(0, 0.65, 0);
     controls.minDistance = 2;
@@ -67,8 +67,8 @@ export function Scene({
     controls.maxPolarAngle = Math.PI / 2.03;
     controls.enableDamping = true;
     controls.update();
-    scene.add(new AmbientLight(themes[theme].light, theme === "neon" ? 1.7 : 2.3));
-    const light = new DirectionalLight(themes[theme].light, 3.2);
+    scene.add(new AmbientLight(themes[theme].light, theme === "neon" ? 1.2 : 1.5));
+    const light = new DirectionalLight(themes[theme].light, 2.4);
     light.position.set(4, 6, 3);
     light.castShadow = true;
     light.shadow.mapSize.set(2048, 2048);
@@ -110,9 +110,26 @@ export function Scene({
       }
     });
     observer.observe(element);
+    let sampleStart = performance.now();
+    let renderedFrames = 0;
     renderer.setAnimationLoop(() => {
       controls.update();
       renderer.render(scene, camera);
+      renderedFrames += 1;
+      const now = performance.now();
+      if (now - sampleStart >= 1000) {
+        performance.clearMeasures("rallylab-render");
+        performance.measure("rallylab-render", {
+          start: sampleStart,
+          end: now,
+          detail: {
+            fps: (renderedFrames * 1000) / (now - sampleStart),
+            drawCalls: renderer.info.render.calls,
+          },
+        });
+        renderedFrames = 0;
+        sampleStart = now;
+      }
     });
     return () => {
       observer.disconnect();

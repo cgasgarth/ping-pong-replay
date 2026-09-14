@@ -1,0 +1,15 @@
+{
+  "source": "https://www.youtube.com/watch?v=zi8GB78upXw",
+  "clipStartSeconds": 275,
+  "width": 1920,
+  "height": 1080,
+  "method": "Manual torso regions from original frames, without the tracking overlay. This checks participant identity and coarse image position, not joint or 3D accuracy.",
+  "observations": [
+    { "time": 1, "player": 0, "region": [735, 535, 912, 776] },
+    { "time": 1, "player": 1, "region": [990, 250, 1125, 371] },
+    { "time": 5, "player": 0, "region": [747, 500, 915, 744] },
+    { "time": 5, "player": 1, "region": [888, 218, 991, 342] },
+    { "time": 9, "player": 0, "region": [810, 525, 960, 748] },
+    { "time": 9, "player": 1, "region": [855, 290, 1000, 405] }
+  ]
+}

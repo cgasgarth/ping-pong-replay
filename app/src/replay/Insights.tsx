@@ -171,6 +171,7 @@ export function Insights({ replay, time, onSeek, onChange, onError }: Props) {
             {data.notes.map((note) => (
               <p key={note}>{note}</p>
             ))}
+            <p>Avatar faces point toward the table. Gaze direction is not measured.</p>
             <p>
               {data.device} · {data.elapsed}s analysis
             </p>

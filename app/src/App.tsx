@@ -11,19 +11,38 @@ import { Workspace } from "./replay/Workspace";
 
 export function App() {
   const [theme, setTheme] = useState<ThemeId>(readTheme);
-  function changeTheme(value: ThemeId) {setTheme(value);localStorage.setItem("rallylab-theme",value);}
+  function changeTheme(value: ThemeId) {
+    setTheme(value);
+    localStorage.setItem("rallylab-theme", value);
+  }
   const [replays, setReplays] = useState<Replay[]>([]);
-    const [selected, setSelected] = useState<Replay | null>(null);
-    const [failure, setError] = useState("");
-    const [busy, setBusy] = useState(false);
-    const load = useCallback(async () => {
-      setReplays(await request("/replays", z.array(replaySchema)));
-    }, []);
-  useEffect(() => {
-    request("/replays", z.array(replaySchema)).then(setReplays).catch((error: unknown) => {
-      setError(String(error));
-    });
+  const [selected, setSelected] = useState<Replay | null>(null);
+  const [failure, setError] = useState("");
+  const [busy, setBusy] = useState(false);
+  const load = useCallback(async () => {
+    setReplays(await request("/replays", z.array(replaySchema)));
   }, []);
+  useEffect(() => {
+    request("/replays", z.array(replaySchema))
+      .then(setReplays)
+      .catch((error: unknown) => {
+        setError(String(error));
+      });
+  }, []);
+  const pending = replays.some(
+    (replay) => replay.status === "queued" || replay.status === "analyzing",
+  );
+  useEffect(() => {
+    if (selected !== null || !pending) return () => {};
+    const timer = setInterval(() => {
+      void load().catch((error: unknown) => {
+        setError(String(error));
+      });
+    }, 2000);
+    return () => {
+      clearInterval(timer);
+    };
+  }, [selected, pending, load]);
   async function open(id: string) {
     setError("");
     try {
@@ -109,7 +128,13 @@ export function App() {
       {selected === null ? (
         <Library theme={theme} replays={replays} busy={busy} onImport={importVideo} onOpen={open} />
       ) : (
-        <Workspace theme={theme} replay={selected} onChange={setSelected} onBack={home} onError={setError} />
+        <Workspace
+          theme={theme}
+          replay={selected}
+          onChange={setSelected}
+          onBack={home}
+          onError={setError}
+        />
       )}
       <footer>
         <span>

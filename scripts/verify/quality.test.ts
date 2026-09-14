@@ -41,3 +41,59 @@ test("low-confidence wrists cannot produce hand speed", () => {
   expect(playerMetrics(frames, 0).wristSpeed).toBeNull();
   expect(playerMetrics(frames, 0).lean).toBeNull();
 });
+
+test("ball speed needs enough supported 3D motion", async () => {
+  const { ballSpeed } = await import("../../app/src/analytics/metrics");
+  const replay = {
+    id: "test",
+    title: "Test",
+    players: ["A", "B"] as const,
+    created: "2026-09-14",
+    duration: 2,
+    fps: 60,
+    fps_override: null,
+    width: 1920,
+    height: 1080,
+    status: "complete" as const,
+    progress: 1,
+    error: null,
+    corners: [],
+    analysis: {
+      ball_coverage: 1,
+      pose_coverage: 0,
+      device: "test",
+      elapsed: 1,
+      notes: [],
+      rallies: [],
+      stats: [],
+      frames: Array.from({ length: 120 }, (_, index) => ({
+        time: index / 60,
+        players: [],
+        ball: {
+          x: index / 6,
+          y: 1,
+          z: 0,
+          u: 0.5,
+          v: 0.5,
+          confidence: 1,
+          mode: "learned-3d" as const,
+        },
+      })),
+    },
+  };
+  expect(ballSpeed(replay)).toBeCloseTo(36);
+  const sparse = {
+    ...replay,
+    analysis: {
+      ...replay.analysis,
+      frames: replay.analysis.frames.map((frame, index) => ({
+        ...frame,
+        ball: {
+          ...frame.ball,
+          mode: index < 20 ? ("learned-3d" as const) : ("table-plane" as const),
+        },
+      })),
+    },
+  };
+  expect(ballSpeed(sparse)).toBeNull();
+});

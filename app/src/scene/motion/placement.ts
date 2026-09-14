@@ -50,7 +50,7 @@ function intersects(point: Collider, offset: Placement): boolean {
 }
 export function placement(pose: PlayerPose): Placement {
   const feet = [pose.joints[15]?.y ?? 0, pose.joints[16]?.y ?? 0];
-  const offset = { x: 0, y: Math.max(0, 0.055 - Math.min(...feet)), z: 0 };
+  const offset = { x: 0, y: Math.max(0, 0.03 - Math.min(...feet)), z: 0 };
   const hipX = ((pose.joints[11]?.x ?? 0) + (pose.joints[12]?.x ?? 0)) / 2;
   const side = hipX < 0 ? -1 : 1;
   const points = colliders(pose);

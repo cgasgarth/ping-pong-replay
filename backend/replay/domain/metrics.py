@@ -14,6 +14,7 @@ MAX_POSE_GAP = 0.3
 MAX_STEP = 0.8
 TRAVEL_INTERVAL = 0.25
 MIN_TRAVEL = 0.03
+MIN_METRIC_SAMPLES = 10
 
 
 def rallies(frames: list[Frame], duration: float) -> list[Rally]:
@@ -62,9 +63,9 @@ def statistics(frames: list[Frame]) -> list[PlayerStats]:
         summaries.append(
             PlayerStats(
                 samples=len(poses),
-                elbow_mean=round(mean(elbows), 1) if elbows else None,
-                knee_mean=round(mean(knees), 1) if knees else None,
-                stance_mean=round(mean(stances), 2) if stances else None,
+                elbow_mean=round(mean(elbows), 1) if len(elbows) >= MIN_METRIC_SAMPLES else None,
+                knee_mean=round(mean(knees), 1) if len(knees) >= MIN_METRIC_SAMPLES else None,
+                stance_mean=round(mean(stances), 2) if len(stances) >= MIN_METRIC_SAMPLES else None,
                 distance=round(distance, 2),
             ),
         )

@@ -5,7 +5,7 @@
 }
 .analytics-section .eyebrow {
   color: #94a18b;
-  font-size: 8px;
+  font-size: 10px;
 }
 .analytics-section h2 {
   margin-top: 8px;
@@ -16,8 +16,8 @@
   display: flex;
   gap: 6px;
   align-items: center;
-  font-size: 9px;
-  color: #91a184;
+  font-size: 11px;
+  color: #667460;
 }
 .session-numbers {
   display: grid;
@@ -39,7 +39,7 @@
 }
 .session-numbers span {
   font-size: 10px;
-  color: #8c9b82;
+  color: #667460;
 }
 .session-numbers strong {
   font-family: "Manrope Variable", sans-serif;
@@ -52,7 +52,7 @@
   font-size: 11px;
   letter-spacing: 0;
   font-weight: 400;
-  color: #8c9b82;
+  color: #667460;
 }
 .analysis-panels {
   display: grid;
@@ -76,9 +76,9 @@
   font-weight: 600;
 }
 .chart-heading > span {
-  font-size: 7px;
+  font-size: 11px;
   letter-spacing: 1.3px;
-  color: #9ea98e;
+  color: #667460;
 }
 .position-map {
   width: 100%;
@@ -90,7 +90,7 @@
   gap: 20px;
   justify-content: center;
   margin: 15px 0;
-  font-size: 9px;
+  font-size: 11px;
   color: #7b8f72;
 }
 .chart-legend span {
@@ -102,9 +102,9 @@
   display: flex;
   align-items: center;
   gap: 6px;
-  font-size: 9px;
+  font-size: 11px;
   line-height: 1.7;
-  color: #99a38e;
+  color: #667460;
   margin-top: 12px;
 }
 .mechanics-row {
@@ -123,21 +123,21 @@
   font-weight: 500;
 }
 .mechanics-row strong:nth-child(2) {
-  color: #c97752;
+  color: color-mix(in srgb, var(--player-one) 65%, #22322b);
 }
 .mechanics-row strong:nth-child(3) {
-  color: #488d81;
+  color: color-mix(in srgb, var(--player-two) 65%, #22322b);
 }
 .mechanics-row.header {
   padding-top: 0;
-  font-size: 8px;
+  font-size: 10px;
   letter-spacing: 0.7px;
 }
 .mechanics-row.header span:nth-child(2) {
-  color: #c97752;
+  color: color-mix(in srgb, var(--player-one) 65%, #22322b);
 }
 .mechanics-row.header span:nth-child(3) {
-  color: #488d81;
+  color: color-mix(in srgb, var(--player-two) 65%, #22322b);
 }
 .angle-heading {
   margin: 24px 0 8px;
@@ -150,4 +150,21 @@
   height: 85px;
   display: block;
 }
-.analytics-actions{display:flex;align-items:center;gap:20px}.unit-picker{display:flex;align-items:center;gap:8px;font-size:10px;color:#819078}.unit-picker select{font-size:10px;background:#fff;border-color:var(--line);padding:6px 10px}
+.analytics-actions {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+}
+.unit-picker {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 10px;
+  color: #819078;
+}
+.unit-picker select {
+  font-size: 10px;
+  background: #fff;
+  border-color: var(--line);
+  padding: 6px 10px;
+}

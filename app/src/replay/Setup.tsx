@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Crosshair, Play, RotateCcw, X } from "lucide-react";
 import { json, replaySchema, request } from "../api";
 import type { Replay } from "../api";
@@ -10,11 +10,21 @@ interface Props {
   readonly onError: (error: string) => void;
 }
 export function Setup({ replay, onClose, onChange, onError }: Props) {
+  const dialog = useRef<HTMLDialogElement>(null);
+  useEffect(() => {
+    const element = dialog.current;
+    element?.showModal();
+    return () => {
+      element?.close();
+    };
+  }, []);
   const [title, setTitle] = useState(replay.title);
-    const [players, setPlayers] = useState<[string, string]>([...replay.players]);
-    const [fps, setFps] = useState(replay.fps_override?.toString() ?? "");
-    const [corners, setCorners] = useState<Replay["corners"]>(replay.corners);
-    const [busy, setBusy] = useState(false);
+  const [players, setPlayers] = useState<[string, string]>([...replay.players]);
+  const [fps, setFps] = useState(replay.fps_override?.toString() ?? "");
+  const [corners, setCorners] = useState<Replay["corners"]>(replay.corners);
+  const [busy, setBusy] = useState(false);
+  const invalidFps =
+    fps !== "" && (!Number.isFinite(Number(fps)) || Number(fps) < 60 || Number(fps) > 240);
   async function save(run: boolean) {
     setBusy(true);
     try {
@@ -37,7 +47,9 @@ export function Setup({ replay, onClose, onChange, onError }: Props) {
   }
   return (
     <div className="modal-backdrop">
-      <dialog open
+      <dialog
+        ref={dialog}
+        onCancel={onClose}
         className="setup-panel"
         aria-modal="true"
         aria-labelledby="setup-heading"
@@ -103,6 +115,7 @@ export function Setup({ replay, onClose, onChange, onError }: Props) {
             use video timestamps.
           </p>
         </div>
+        {invalidFps && <p role="alert">Frame rate must be between 60 and 240 fps.</p>}
         <div className="calibration-heading">
           <span>
             <Crosshair size={16} /> Table calibration
@@ -118,8 +131,8 @@ export function Setup({ replay, onClose, onChange, onError }: Props) {
           </button>
         </div>
         <p className="muted">
-          Select top-left, top-right, bottom-right, then bottom-left. The first edge must be a long
-          table edge. {corners.length}/4 selected.
+          Start at any tabletop corner. Select the next corner along the long edge (2.74 m), then
+          follow the perimeter to select the remaining two corners. {corners.length}/4 selected.
         </p>
         <button
           type="button"
@@ -162,7 +175,7 @@ export function Setup({ replay, onClose, onChange, onError }: Props) {
           <button
             className="button secondary"
             type="button"
-            disabled={busy || title.trim() === ""}
+            disabled={busy || invalidFps || title.trim() === ""}
             onClick={() => {
               void save(false);
             }}
@@ -172,7 +185,7 @@ export function Setup({ replay, onClose, onChange, onError }: Props) {
           <button
             className="button primary"
             type="button"
-            disabled={busy || corners.length !== 4 || title.trim() === ""}
+            disabled={busy || invalidFps || corners.length !== 4 || title.trim() === ""}
             onClick={() => {
               void save(true);
             }}

@@ -7,9 +7,27 @@ import numpy as np
 
 if TYPE_CHECKING:
     from replay.analysis.geometry import FloatArray
+    from replay.domain.models import Joint, PlayerPose
 
 BONES = ((5, 7), (7, 9), (6, 8), (8, 10), (11, 13), (13, 15), (12, 14), (14, 16))
 EPSILON = 1e-6
+PARENTS = {7: 5, 8: 6, 9: 7, 10: 8, 13: 11, 14: 12, 15: 13, 16: 14}
+
+
+def retain_hidden(index: int, joints: list[Joint], previous: PlayerPose, root: FloatArray) -> None:
+    """Keep a hidden limb attached as its visible parent moves."""
+    joint, old = joints[index], previous.joints[index]
+    parent = PARENTS.get(index)
+    if parent is not None:
+        anchor, old_anchor = joints[parent], previous.joints[parent]
+        joint.x = old.x + anchor.x - old_anchor.x
+        joint.y = old.y + anchor.y - old_anchor.y
+        joint.z = old.z + anchor.z - old_anchor.z
+    else:
+        left, right = previous.joints[15:17]
+        joint.x = old.x + float(root[0]) - (left.x + right.x) / 2
+        joint.y = old.y
+        joint.z = old.z + float(root[2]) - (left.z + right.z) / 2
 
 
 def stabilize(values: FloatArray) -> None:

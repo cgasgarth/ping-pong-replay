@@ -1,4 +1,5 @@
-import { useEffect, useRef } from "react";
+import { buildPlacementTrack, plannedPlacement } from "../scene/motion/placement-track";
+import { useEffect, useMemo, useRef } from "react";
 import {
   AmbientLight,
   ACESFilmicToneMapping,
@@ -33,16 +34,19 @@ interface AnimatedScene {
   readonly positions: Float32BufferAttribute;
 }
 export function Scene({
+  frames,
   theme,
   frame,
   trail,
   reset,
 }: {
+  readonly frames: readonly Frame[];
   readonly theme: ThemeId;
   readonly frame: Frame | undefined;
   readonly trail: readonly (readonly [number, number, number])[];
   readonly reset: number;
 }) {
+  const placements = useMemo(() => buildPlacementTrack(frames), [frames]);
   const target = useRef<HTMLDivElement>(null);
   const actors = useRef<AnimatedScene | null>(null);
   useEffect(() => {
@@ -160,7 +164,8 @@ export function Scene({
         rig = createAvatar(pose, theme);
         animated.rigs.set(pose.player, rig);
         animated.group.add(rig.group);
-      } else rig.update(pose);
+      }
+      rig.update(pose, plannedPlacement(placements, pose, frame?.time ?? 0));
     }
     const ball = frame?.ball;
     animated.ball.visible = ball !== undefined && ball !== null;
@@ -172,6 +177,6 @@ export function Scene({
     }
     animated.positions.needsUpdate = true;
     animated.trail.geometry.setDrawRange(0, points.length);
-  }, [frame, trail, reset, theme]);
+  }, [frame, trail, reset, theme, placements]);
   return <div className="three-canvas" ref={target} aria-label="Rotatable 3D replay" />;
 }

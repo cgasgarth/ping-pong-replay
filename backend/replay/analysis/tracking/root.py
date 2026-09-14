@@ -11,6 +11,7 @@ if TYPE_CHECKING:
     from replay.domain.models import PlayerPose
 
 MIN_CONFIDENCE = 0.5
+HIP_REFERENCE_HEIGHT = 0.9
 MAX_GROUND_SPEED = 4.5
 TABLE_HALF_LENGTH = 1.37
 TABLE_HALF_WIDTH = 0.7625
@@ -44,7 +45,7 @@ def root_position(
         estimated = camera.on_plane(
             float((points[11, 0] + points[12, 0]) / 2 / camera.width),
             float((points[11, 1] + points[12, 1]) / 2 / camera.height),
-            0.9,
+            HIP_REFERENCE_HEIGHT,
         )
         estimated[1] = 0
     else:

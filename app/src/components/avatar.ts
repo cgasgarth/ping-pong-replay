@@ -1,6 +1,17 @@
-import { Material, Matrix4, Line, Group, Mesh, MeshStandardMaterial, SphereGeometry, Vector3 } from "three";
+import {
+  Material,
+  Matrix4,
+  Line,
+  Group,
+  Mesh,
+  MeshStandardMaterial,
+  SphereGeometry,
+  Vector3,
+} from "three";
 import { catFace, catTail } from "../scene/cat";
 import { face } from "../scene/faces";
+import { contactPose } from "../scene/motion/contact";
+import type { Placement } from "../scene/motion/placement";
 import { placement } from "../scene/motion/placement";
 import { themes } from "../scene/themes";
 import type { ThemeId } from "../scene/themes";
@@ -17,7 +28,7 @@ const links = [
 ] as const;
 export interface AvatarRig {
   readonly group: Group;
-  readonly update: (pose: PlayerPose) => void;
+  readonly update: (pose: PlayerPose, offset: Placement) => void;
 }
 export function createAvatar(initial: PlayerPose, theme: ThemeId): AvatarRig {
   const group = new Group();
@@ -83,7 +94,8 @@ export function createAvatar(initial: PlayerPose, theme: ThemeId): AvatarRig {
   const bodyRight = new Vector3();
   const bodyForward = new Vector3();
   const basis = new Matrix4();
-  function update(pose: PlayerPose): void {
+  function update(source: PlayerPose, offset: Placement): void {
+    const pose = contactPose(source);
     group.visible = true;
     for (let index = 0; index < points.length; index += 1) {
       const point = points[index];
@@ -177,7 +189,6 @@ export function createAvatar(initial: PlayerPose, theme: ThemeId): AvatarRig {
       tail.position.copy(hips);
       tail.rotation.y = Math.atan2(hips.x, hips.z);
     }
-    const offset = placement(pose);
     group.position.set(offset.x, offset.y, offset.z);
     const opacity =
       pose.state === "held"
@@ -188,6 +199,6 @@ export function createAvatar(initial: PlayerPose, theme: ThemeId): AvatarRig {
         : 1;
     for (const material of fadingMaterials) material.opacity = opacity;
   }
-  update(initial);
+  update(initial, placement(initial));
   return { group, update };
 }

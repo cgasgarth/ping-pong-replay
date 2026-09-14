@@ -21,6 +21,7 @@ def test_image_rays_correct_a_mirrored_native_pose() -> None:
         1080,
     )
     world = np.array([[-2.0, 1.0, (index % 2 - 0.5) * 0.4] for index in range(17)])
+    world[11:13, 1] = 0.9
     world[15:17, 1] = 0
     world[15:17, 2] = [-0.2, 0.2]
     native = world @ camera.rotation.T + camera.translation

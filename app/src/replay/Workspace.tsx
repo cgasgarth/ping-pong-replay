@@ -242,7 +242,13 @@ export function Workspace({ replay, onChange, onBack, onError, theme }: Props) {
           <div className={`viewer mode-${mode}`} ref={viewer}>
             <div className="scene-view" style={{ display: mode === "video" ? "none" : "block" }}>
               <Suspense fallback={<div className="no-analysis">Loading 3D view…</div>}>
-                <Scene theme={theme} frame={frame} trail={trail} reset={reset} />
+                <Scene
+                  frames={data?.frames ?? []}
+                  theme={theme}
+                  frame={frame}
+                  trail={trail}
+                  reset={reset}
+                />
               </Suspense>
               <span className="view-label">
                 <Box size={13} /> 3D RECONSTRUCTION

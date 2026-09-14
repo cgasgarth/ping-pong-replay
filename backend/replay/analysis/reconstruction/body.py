@@ -6,7 +6,7 @@ from typing import TYPE_CHECKING
 import numpy as np
 
 from replay.analysis.tracking.limbs import PARENTS
-from replay.analysis.tracking.root import table_occludes
+from replay.analysis.tracking.root import HIP_REFERENCE_HEIGHT, table_occludes
 
 if TYPE_CHECKING:
     from replay.analysis.geometry import Camera, FloatArray
@@ -27,8 +27,10 @@ def world_pose(
     rotated = coordinates @ camera.rotation
     world = rotated - (rotated[15] + rotated[16]) / 2 + root
     native = world.copy()
-    anchor_depth = float((camera.rotation @ root + camera.translation)[2])
-    depth_offsets = coordinates[:, 2] - (coordinates[15, 2] + coordinates[16, 2]) / 2
+    anchor_depth = float(
+        (camera.rotation @ (root + np.array([0.0, HIP_REFERENCE_HEIGHT, 0.0])) + camera.translation)[2]
+    )
+    depth_offsets = coordinates[:, 2] - (coordinates[11, 2] + coordinates[12, 2]) / 2
     for index, (u, v, confidence) in enumerate(detection.keypoints):
         if confidence < MIN_CONFIDENCE or (
             index in (13, 14, 15, 16) and table_occludes(camera, float(u), float(v))

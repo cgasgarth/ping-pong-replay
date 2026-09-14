@@ -61,7 +61,7 @@ export function sampleFrame(frames: readonly Frame[], time: number): Frame | und
       const alpha = Math.max(0, Math.min(1, (time - previous.time) / (next.time - previous.time)));
       return poseAt(pose, following, alpha);
     }) ?? [];
-  return { ...current, players };
+  return { ...current, time, players };
 }
 
 export function ballTrail(

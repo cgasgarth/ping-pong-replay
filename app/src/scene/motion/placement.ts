@@ -1,3 +1,4 @@
+import { contactPose } from "./contact";
 import type { PlayerPose } from "../../api";
 export interface Placement {
   readonly x: number;
@@ -24,7 +25,8 @@ interface Collider {
   readonly z: number;
   readonly radius: number;
 }
-function colliders(pose: PlayerPose): Collider[] {
+function colliders(source: PlayerPose): Collider[] {
+  const pose = contactPose(source);
   return segments.flatMap(([first, last, radius]) => {
     const start = pose.joints[first];
     const end = pose.joints[last];
@@ -43,7 +45,7 @@ function colliders(pose: PlayerPose): Collider[] {
 function intersects(point: Collider, offset: Placement): boolean {
   return (
     point.y + offset.y - point.radius < 0.79 &&
-    point.y + offset.y + point.radius > 0 &&
+    point.y + offset.y + point.radius > 0.7 &&
     Math.abs(point.x + offset.x) < 1.37 + point.radius &&
     Math.abs(point.z + offset.z) < 0.7625 + point.radius
   );

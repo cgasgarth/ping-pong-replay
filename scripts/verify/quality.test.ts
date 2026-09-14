@@ -97,3 +97,40 @@ test("ball speed needs enough supported 3D motion", async () => {
   };
   expect(ballSpeed(sparse)).toBeNull();
 });
+
+test("table corrections anticipate contact without a sudden body jump", async () => {
+  const { buildPlacementTrack, plannedPlacement } =
+    await import("../../app/src/scene/motion/placement-track");
+  const { tableIntersections } = await import("../../app/src/scene/motion/placement");
+  const frames = [-2, -1.1, -2].map((x, index) => ({
+    time: index / 10,
+    ball: null,
+    players: [
+      {
+        player: 0,
+        state: "observed" as const,
+        elbow: null,
+        knee: null,
+        stance: null,
+        joints: Array.from({ length: 17 }, (_, joint) => ({
+          x,
+          y: joint >= 15 ? 0 : 0.75,
+          z: 0,
+          u: 0.5,
+          v: 0.5,
+          confidence: 1,
+        })),
+      },
+    ],
+  }));
+  const track = buildPlacementTrack(frames);
+  const offsets = frames.map((frame) => {
+    const pose = frame.players[0];
+    if (pose === undefined) throw new Error("Missing fixture pose");
+    const offset = plannedPlacement(track, pose, frame.time);
+    expect(tableIntersections(pose, offset)).toBe(0);
+    return offset.x;
+  });
+  expect(Math.abs((offsets[1] ?? 0) - (offsets[0] ?? 0))).toBeLessThanOrEqual(0.126);
+  expect(Math.abs((offsets[2] ?? 0) - (offsets[1] ?? 0))).toBeLessThanOrEqual(0.126);
+});

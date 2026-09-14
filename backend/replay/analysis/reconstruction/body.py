@@ -27,9 +27,8 @@ def world_pose(
     rotated = coordinates @ camera.rotation
     world = rotated - (rotated[15] + rotated[16]) / 2 + root
     native = world.copy()
-    anchor_depth = float(
-        (camera.rotation @ (root + np.array([0.0, HIP_REFERENCE_HEIGHT, 0.0])) + camera.translation)[2]
-    )
+    hip_anchor = root + np.array([0.0, HIP_REFERENCE_HEIGHT, 0.0])
+    anchor_depth = float((camera.rotation @ hip_anchor + camera.translation)[2])
     depth_offsets = coordinates[:, 2] - (coordinates[11, 2] + coordinates[12, 2]) / 2
     for index, (u, v, confidence) in enumerate(detection.keypoints):
         if confidence < MIN_CONFIDENCE or (

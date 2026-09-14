@@ -107,7 +107,9 @@ export function Insights({ replay, time, onSeek, onChange, onError }: Props) {
             >
               <span className="rally-number">{(index + 1).toString().padStart(2, "0")}</span>
               <span>
-                <strong>Serve {index + 1}</strong>
+                <strong>
+                  {rally.source === "estimated" ? "Candidate serve" : "Serve"} {index + 1}
+                </strong>
                 <small>
                   {clock(rally.start)} — {clock(rally.end)}
                 </small>

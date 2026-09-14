@@ -94,6 +94,8 @@ export function Workspace({ replay, onChange, onBack, onError, theme }: Props) {
           rally.end - time <= 1 / (replay.fps_override ?? replay.fps) && rally.winner === player,
       ).length ?? 0,
   );
+  const unresolved =
+    data?.rallies.filter((rally) => rally.end <= time && rally.winner === null).length ?? 0;
   function seek(value: number) {
     const bounded = Math.max(0, Math.min(duration, value));
     setTime(bounded);
@@ -312,7 +314,12 @@ export function Workspace({ replay, onChange, onBack, onError, theme }: Props) {
               <b>{scores[0]}</b>
             </div>
             <span className="score-label">
-              POINTS IN CLIP<small>Estimated · review uncertain points</small>
+              POINTS IN CLIP
+              <small>
+                {unresolved > 0
+                  ? `${unresolved} point${unresolved === 1 ? "" : "s"} need review`
+                  : "Estimated · review uncertain points"}
+              </small>
             </span>
             <div>
               <b>{scores[1]}</b>

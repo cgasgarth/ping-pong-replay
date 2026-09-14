@@ -80,6 +80,9 @@ export function Scene({
     scene.add(light);
     const table = court(themes[theme]);
     const surroundings = environment(theme);
+    const backWall = surroundings.children.filter(
+      (object) => object.position.z < -3 && object.position.y > 0.1,
+    );
     scene.add(surroundings);
     scene.add(table);
     const moving = new Group();
@@ -114,6 +117,9 @@ export function Scene({
     let renderedFrames = 0;
     renderer.setAnimationLoop(() => {
       controls.update();
+      if (theme === "club" || theme === "mishka" || theme === "neon") {
+        for (const object of backWall) object.visible = camera.position.z > -4;
+      }
       renderer.render(scene, camera);
       renderedFrames += 1;
       const now = performance.now();

@@ -1,4 +1,5 @@
 import { Activity, ArrowUpRight, Check, Flag, Plus, Trash2 } from "lucide-react";
+import { useState } from "react";
 import { clock, json, replaySchema, request } from "../api";
 import { addMarker } from "./review/markers";
 import type { Rally, Replay } from "../api";
@@ -12,11 +13,15 @@ interface Props {
 }
 export function Insights({ replay, time, onSeek, onChange, onError }: Props) {
   const data = replay.analysis;
+  const [updating, setUpdating] = useState(false);
   async function update(rallies: readonly Rally[]) {
+    setUpdating(true);
     try {
       onChange(await request(`/replays/${replay.id}/rallies`, replaySchema, json("PUT", rallies)));
     } catch (error) {
       onError(String(error));
+    } finally {
+      setUpdating(false);
     }
   }
   return (
@@ -74,7 +79,10 @@ export function Insights({ replay, time, onSeek, onChange, onError }: Props) {
             type="button"
             aria-label="Add serve at current time"
             className="icon-button"
-            disabled={time >= (replay.duration * replay.fps) / (replay.fps_override ?? replay.fps)}
+            disabled={
+              updating ||
+              time >= (replay.duration * replay.fps) / (replay.fps_override ?? replay.fps)
+            }
             onClick={() => {
               const duration = (replay.duration * replay.fps) / (replay.fps_override ?? replay.fps);
               const events = addMarker(data.rallies, time, duration);
@@ -109,6 +117,7 @@ export function Insights({ replay, time, onSeek, onChange, onError }: Props) {
             <label>
               Point to
               <select
+                disabled={updating}
                 aria-label={`Winner of rally ${index + 1}`}
                 value={rally.winner ?? ""}
                 onChange={(event) => {
@@ -138,6 +147,7 @@ export function Insights({ replay, time, onSeek, onChange, onError }: Props) {
             <button
               type="button"
               className="remove-marker"
+              disabled={updating}
               aria-label={`Remove serve ${index + 1}`}
               onClick={() => {
                 void update(data.rallies.filter((_, itemIndex) => itemIndex !== index));

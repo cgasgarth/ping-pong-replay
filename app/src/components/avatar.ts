@@ -1,4 +1,4 @@
-import { Material, Line, Group, Mesh, MeshStandardMaterial, SphereGeometry, Vector3 } from "three";
+import { Material, Matrix4, Line, Group, Mesh, MeshStandardMaterial, SphereGeometry, Vector3 } from "three";
 import { catFace, catTail } from "../scene/cat";
 import { face } from "../scene/faces";
 import { placement } from "../scene/motion/placement";
@@ -79,6 +79,10 @@ export function createAvatar(initial: PlayerPose, theme: ThemeId): AvatarRig {
   const direction = new Vector3();
   const shoulder = new Vector3();
   const hips = new Vector3();
+  const bodyUp = new Vector3();
+  const bodyRight = new Vector3();
+  const bodyForward = new Vector3();
+  const basis = new Matrix4();
   function update(pose: PlayerPose): void {
     group.visible = true;
     for (let index = 0; index < points.length; index += 1) {
@@ -104,7 +108,15 @@ export function createAvatar(initial: PlayerPose, theme: ThemeId): AvatarRig {
         shoulder.distanceTo(hips) * 0.64,
         0.125,
       );
-      torso.quaternion.setFromUnitVectors(up, direction.copy(shoulder).sub(hips).normalize());
+      bodyUp.copy(shoulder).sub(hips).normalize();
+      bodyRight.copy(leftShoulder).sub(rightShoulder).normalize();
+      bodyForward.crossVectors(bodyRight, bodyUp).normalize();
+      if (bodyForward.lengthSq() > 0.5) {
+        bodyRight.crossVectors(bodyUp, bodyForward).normalize();
+        basis.makeBasis(bodyRight, bodyUp, bodyForward);
+        torso.quaternion.setFromRotationMatrix(basis);
+        pelvis.rotation.y = Math.atan2(bodyForward.x, bodyForward.z);
+      }
       pelvis.position.copy(hips);
       pelvis.scale.set(Math.max(0.14, leftHip.distanceTo(rightHip) * 0.63), 0.14, 0.13);
     }
@@ -149,7 +161,7 @@ export function createAvatar(initial: PlayerPose, theme: ThemeId): AvatarRig {
             : [0.105, 0.13, 0.11];
       head.scale.set(headSize[0], headSize[1], headSize[2]);
       features.position.copy(head.position);
-      features.rotation.y = Math.atan2(-center.x, -center.z);
+      features.rotation.y = Math.atan2(bodyForward.x, bodyForward.z);
     }
     for (let index = 0; index < 2; index += 1) {
       const foot = points[15 + index],

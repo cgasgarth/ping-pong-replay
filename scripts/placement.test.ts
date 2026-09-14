@@ -85,3 +85,23 @@ test("converts speed units without changing the stored metric value", async () =
   expect(speedValue(36, "kmh")).toBe(36);
   expect(speedValue(36, "mph")).toBeCloseTo(22.36936, 4);
 });
+
+test("turns the torso across the shoulder axis", async () => {
+  const { createAvatar } = await import("../app/src/components/avatar");
+  const { Vector3 } = await import("three");
+  const turned = {
+    ...pose,
+    joints: pose.joints.map((joint, index) => ({
+      ...joint,
+      x: -2,
+      y: index === 5 || index === 6 ? 1.4 : 0.9,
+      z: index === 5 || index === 11 ? -0.2 : 0.2,
+    })),
+  };
+  const rig = createAvatar(turned, "lab");
+  const torso = rig.group.getObjectByName("torso");
+  expect(torso).toBeDefined();
+  if (torso === undefined) throw new Error("Missing torso");
+  const shoulderAxis = new Vector3(1, 0, 0).applyQuaternion(torso.quaternion);
+  expect(shoulderAxis.z).toBeCloseTo(-1);
+});

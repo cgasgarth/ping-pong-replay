@@ -35,8 +35,13 @@ def root_position(
                 float((points[11, 1] + points[12, 1]) / 2 / camera.height),
                 height,
             )
-            estimated[0] += hip[0] - (hip_left.x + hip_right.x) / 2
-            estimated[2] += hip[2] - (hip_left.z + hip_right.z) / 2
+            lateral = camera.rotation.T[:, 0].copy()
+            lateral[1] = 0
+            lateral /= np.linalg.norm(lateral)
+            displacement = hip - np.array(
+                [(hip_left.x + hip_right.x) / 2, height, (hip_left.z + hip_right.z) / 2]
+            )
+            estimated += lateral * float(np.dot(displacement, lateral))
     if previous is not None:
         left, right = previous.joints[15:17]
         old = np.array([(left.x + right.x) / 2, 0, (left.z + right.z) / 2])

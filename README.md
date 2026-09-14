@@ -16,9 +16,16 @@ bun run dev
 [Install & local setup](documentation/install.md) · [Architecture](documentation/architecture.md) · [License](docs/legal/LICENSE)
 
 <details>
-<summary>Analysis workspace</summary>
+<summary>Match analytics</summary>
 
 ![Movement analytics](docs/screenshots/analytics.png)
+
+</details>
+
+<details>
+<summary>3D replay · US Open environment</summary>
+
+![3D replay workspace](docs/screenshots/themes/us-open.png)
 
 </details>
 

@@ -119,7 +119,8 @@ class Vision:
                 + coordinates[:, 2:3] * forward_axis
             )
             relative: FloatArray = rotated - (rotated[15] + rotated[16]) / 2
-            root = fit_root(detection, camera, relative, root)
+            if previous is None:
+                root = fit_root(detection, camera, relative, root)
             world: FloatArray = relative + root
             for index, joint in enumerate(result.joints):
                 joint.x, joint.y, joint.z = (

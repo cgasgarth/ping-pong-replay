@@ -5,7 +5,7 @@ import numpy as np
 import pytest
 from replay.analysis.geometry import Camera
 from replay.analysis.tracking.identity import Detection
-from replay.analysis.tracking.root import root_position
+from replay.analysis.tracking.root import root_position, table_occludes
 from replay.domain.models import Joint, PlayerPose, Point
 
 
@@ -38,3 +38,22 @@ def test_hidden_feet_preserve_depth_while_hips_move_sideways() -> None:
     displacement = root - np.array([2, 0, 0])
     assert float(np.dot(displacement, forward)) == pytest.approx(0, abs=0.002)
     assert float(np.linalg.norm(displacement)) > 0.01
+
+
+def test_table_masks_confident_ankle_pixels() -> None:
+    """A detector confidence score cannot make an opaque table transparent."""
+    camera = Camera(
+        [
+            Point(x=x / 1920, y=y / 1080)
+            for x, y in [(735, 620), (786, 403), (1130, 405), (1178, 620)]
+        ],
+        1920,
+        1080,
+    )
+    projection = camera.intrinsics @ np.column_stack((camera.rotation, camera.translation))
+    for point, expected in [([0, 0.76, 0, 1], True), ([-2, 0, 0, 1], False)]:
+        pixel = projection @ np.array(point)
+        assert (
+            table_occludes(camera, float(pixel[0] / pixel[2]), float(pixel[1] / pixel[2]))
+            is expected
+        )

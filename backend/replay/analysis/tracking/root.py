@@ -12,6 +12,14 @@ if TYPE_CHECKING:
 
 MIN_CONFIDENCE = 0.5
 MAX_GROUND_SPEED = 4.5
+TABLE_HALF_LENGTH = 1.37
+TABLE_HALF_WIDTH = 0.7625
+
+
+def table_occludes(camera: Camera, u: float, v: float) -> bool:
+    """Reject inferred ankles whose image rays cross the opaque tabletop."""
+    point = camera.on_plane(u / camera.width, v / camera.height, 0.76)
+    return abs(float(point[0])) < TABLE_HALF_LENGTH and abs(float(point[2])) < TABLE_HALF_WIDTH
 
 
 def root_position(
@@ -19,7 +27,11 @@ def root_position(
 ) -> FloatArray:
     """Avoid jumping to extrapolated feet when the lower body leaves the picture."""
     points = detection.keypoints
-    visible_feet = float(points[15, 2]) > MIN_CONFIDENCE and float(points[16, 2]) > MIN_CONFIDENCE
+    visible_feet = all(
+        float(points[index, 2]) > MIN_CONFIDENCE
+        and not table_occludes(camera, float(points[index, 0]), float(points[index, 1]))
+        for index in (15, 16)
+    )
     if previous is None or visible_feet:
         u = float((points[15, 0] + points[16, 0]) / 2 / camera.width)
         v = float((points[15, 1] + points[16, 1]) / 2 / camera.height)

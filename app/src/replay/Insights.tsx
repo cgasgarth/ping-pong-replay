@@ -1,5 +1,6 @@
-import { Activity, ArrowUpRight, Check, Flag, Plus } from "lucide-react";
+import { Activity, ArrowUpRight, Check, Flag, Plus, Trash2 } from "lucide-react";
 import { clock, json, replaySchema, request } from "../api";
+import { addMarker } from "./review/markers";
 import type { Rally, Replay } from "../api";
 
 interface Props {
@@ -73,19 +74,10 @@ export function Insights({ replay, time, onSeek, onChange, onError }: Props) {
             type="button"
             aria-label="Add serve at current time"
             className="icon-button"
+            disabled={time >= (replay.duration * replay.fps) / (replay.fps_override ?? replay.fps)}
             onClick={() => {
-              const events: Rally[] = [
-                ...data.rallies,
-                {
-                  confidence: 1,
-                  end: Math.min(time + 3, replay.duration),
-                  server: null,
-                  source: "reviewed",
-                  start: time,
-                  winner: null,
-                },
-              ];
-              events.sort((a, b) => a.start - b.start);
+              const duration = (replay.duration * replay.fps) / (replay.fps_override ?? replay.fps);
+              const events = addMarker(data.rallies, time, duration);
               void update(events);
             }}
           >
@@ -143,6 +135,16 @@ export function Insights({ replay, time, onSeek, onChange, onError }: Props) {
               </select>
               {rally.source === "reviewed" && <Check size={12} />}
             </label>
+            <button
+              type="button"
+              className="remove-marker"
+              aria-label={`Remove serve ${index + 1}`}
+              onClick={() => {
+                void update(data.rallies.filter((_, itemIndex) => itemIndex !== index));
+              }}
+            >
+              <Trash2 size={12} /> Remove marker
+            </button>
           </div>
         ))}
         {(data === null || data.rallies.length === 0) && (

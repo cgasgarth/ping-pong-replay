@@ -489,3 +489,14 @@
 .three-canvas canvas {
   display: block;
 }
+.rally-row .remove-marker {
+  width: auto;
+  margin: 0 0 12px 14px;
+  padding: 4px 0;
+  color: var(--muted);
+  font-size: 10px;
+  justify-content: flex-start;
+}
+.rally-row .remove-marker:hover {
+  color: #9b493d;
+}

@@ -34,7 +34,8 @@ function sampleMetrics(
       left !== undefined &&
       right !== undefined &&
       shoulderLeft !== undefined &&
-      shoulderRight !== undefined
+      shoulderRight !== undefined &&
+      [left, right, shoulderLeft, shoulderRight].every((joint) => joint.confidence >= 0.5)
     ) {
       points.push({ x: (left.x + right.x) / 2, z: (left.z + right.z) / 2 });
       const dx = (shoulderLeft.x + shoulderRight.x - left.x - right.x) / 2,
@@ -45,7 +46,13 @@ function sampleMetrics(
     const previous = samples[index - 1];
     const wrist = pose.joints[10];
     const earlier = previous?.pose.joints[10];
-    if (previous !== undefined && wrist !== undefined && earlier !== undefined) {
+    if (
+      previous !== undefined &&
+      wrist !== undefined &&
+      earlier !== undefined &&
+      wrist.confidence >= 0.5 &&
+      earlier.confidence >= 0.5
+    ) {
       const dt = sample.time - previous.time;
       if (dt > 0 && dt < 0.2) {
         const speed =

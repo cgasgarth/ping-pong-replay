@@ -14,7 +14,7 @@ from ultralytics import YOLO
 from replay.analysis.ball import BallDetector
 from replay.analysis.geometry import Camera, FloatArray, ImageArray, angle
 from replay.analysis.tracking.identity import PlayerLocks, detections
-from replay.analysis.tracking.root import fit_root, root_position
+from replay.analysis.tracking.root import fit_root, root_position, table_occludes
 from replay.domain.models import Ball, Contract, Joint, PlayerPose
 
 if TYPE_CHECKING:
@@ -131,6 +131,12 @@ class Vision:
                 joint.u = float(detection.keypoints[index, 0] / camera.width)
                 joint.v = float(detection.keypoints[index, 1] / camera.height)
                 joint.confidence = float(np.clip(detection.keypoints[index, 2], 0, 1))
+                if index in (15, 16) and table_occludes(
+                    camera,
+                    float(detection.keypoints[index, 0]),
+                    float(detection.keypoints[index, 1]),
+                ):
+                    joint.confidence = 0
                 if previous is not None and joint.confidence < VISIBLE_JOINT:
                     old = previous.joints[index]
                     old_left, old_right = previous.joints[15:17]

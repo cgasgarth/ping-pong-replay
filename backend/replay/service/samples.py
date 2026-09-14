@@ -1,5 +1,5 @@
 # Copyright (c) 2026 Connor Gasgarth
-"""Published 1080p, 30 fps research sample metadata."""
+"""Published 1080p, 60 fps research sample metadata."""
 
 from pydantic import TypeAdapter
 

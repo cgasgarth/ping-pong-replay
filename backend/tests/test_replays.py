@@ -100,3 +100,32 @@ async def test_invalid_upload_is_rejected_without_library_record(client: AsyncCl
     )
     assert response.status_code == 422
     assert (await client.get("/api/replays")).json() == []
+
+
+@pytest.mark.anyio
+async def test_rally_edits_reject_overlap_and_out_of_bounds(client: AsyncClient) -> None:
+    """Persisted review intervals must be ordered, non-overlapping and within the video."""
+    store.save(
+        record(),
+        Analysis(
+            frames=[],
+            rallies=[],
+            stats=[],
+            ball_coverage=0,
+            pose_coverage=0,
+            device="test",
+            elapsed=1,
+            notes=[],
+        ),
+    )
+    first = {"start": 0, "end": 5, "confidence": 1, "winner": 0}
+    overlap = {"start": 4, "end": 7, "confidence": 1}
+    assert (
+        await client.put("/api/replays/fixture/rallies", json=[first, overlap])
+    ).status_code == 422
+    beyond = {"start": 8, "end": 11, "confidence": 1}
+    assert (await client.put("/api/replays/fixture/rallies", json=[beyond])).status_code == 422
+    valid = await client.put("/api/replays/fixture/rallies", json=[first])
+    assert valid.status_code == 200
+    loaded = (await client.get("/api/replays/fixture")).json()
+    assert loaded["analysis"]["rallies"][0]["source"] == "reviewed"

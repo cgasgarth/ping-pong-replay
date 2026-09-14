@@ -27,11 +27,11 @@
   },
   {
     "id": "rally-two",
-    "title": "France Juniors · Return to court",
-    "file": "france-juniors-two-60.mp4",
+    "title": "France Juniors · Serve and rally",
+    "file": "france-juniors-serve-60.mp4",
     "source": "https://www.youtube.com/watch?v=zi8GB78upXw",
-    "start": 325,
-    "end": 337,
+    "start": 333,
+    "end": 351,
     "corners": [
       {
         "x": 0.3828125,

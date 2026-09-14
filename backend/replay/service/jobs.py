@@ -18,6 +18,7 @@ from replay.analysis.vision import Vision
 from replay.domain import store
 from replay.domain.metrics import rallies, statistics
 from replay.domain.models import Analysis, Frame
+from replay.quality.audit import require_clean
 
 POOL = ThreadPoolExecutor(max_workers=1, thread_name_prefix="rallylab")
 LOGGER = logging.getLogger(__name__)
@@ -89,10 +90,13 @@ def analyze(replay_id: str) -> None:
                     f"Ball height: {flight_coverage:.0%} of detections fit ballistic flight; "
                     "remaining points project to the table plane."
                 ),
-                "Serve markers and point winners are estimates. Review uncertain outcomes.",
+                "Serve markers and winners are estimates. Unsupported outcomes stay uncertain.",
+                "Joint metrics exclude low-confidence or table-occluded joints and held poses.",
                 "The original video is retained. The playback copy has no audio.",
             ],
         )
+        replay.analysis = result
+        require_clean(replay)
         replay.status, replay.progress = "complete", 1
         store.save(replay, result)
     except Exception as error:

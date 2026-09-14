@@ -2,6 +2,7 @@
 """Video decoding and browser-compatible preview generation."""
 
 from fractions import Fraction
+from itertools import pairwise
 from typing import TYPE_CHECKING, cast
 
 import av
@@ -53,6 +54,7 @@ def prepare(source: Path, preview: Path, thumbnail: Path) -> tuple[int, int, flo
 
 
 MIN_FPS = 60
+MIN_FRAMES = 2
 MIN_SHORT_EDGE = 1080
 MIN_LONG_EDGE = 1920
 
@@ -69,3 +71,21 @@ def validate_source(source: Path) -> None:
         if fps < MIN_FPS:
             msg = f"Minimum source frame rate is 60 fps. This video is {fps:.2f} fps."
             raise ValueError(msg)
+        validate_timestamps([float(frame.time) for frame in container.decode(stream)])
+
+
+def validate_timestamps(times: list[float]) -> float:
+    """Check decoded cadence independently of the advertised stream rate."""
+    if len(times) < MIN_FRAMES:
+        msg = "Video must contain at least two timestamped frames."
+        raise ValueError(msg)
+    gaps = [second - first for first, second in pairwise(times)]
+    if any(gap <= 0 for gap in gaps):
+        msg = "Video timestamps must increase for every decoded frame."
+        raise ValueError(msg)
+    rate = (len(times) - 1) / (times[-1] - times[0])
+    tolerance = 0.000001
+    if rate + tolerance < MIN_FPS:
+        msg = f"Minimum decoded frame rate is 60 fps. This video decodes at {rate:.2f} fps."
+        raise ValueError(msg)
+    return rate

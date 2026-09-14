@@ -5,11 +5,11 @@ import math
 from statistics import mean
 
 from replay.domain.models import Frame, PlayerPose, PlayerStats, Rally
+from replay.domain.outcomes import candidate_winner
 
 RALLY_GAP = 1.4
 MIN_RALLY_SAMPLES = 6
 MIN_RALLY_SECONDS = 0.4
-END_LINE_EXIT = 1.65
 MAX_POSE_GAP = 0.3
 MAX_STEP = 0.8
 TRAVEL_INTERVAL = 0.25
@@ -32,9 +32,7 @@ def rallies(frames: list[Frame], duration: float) -> list[Rally]:
         if first is None or last is None:
             continue
         server = 0 if first.x < 0 else 1
-        # End-of-track side alone is insufficient to award a point.
-        # Only a visible exit beyond an end line gives a candidate winner.
-        winner = (1 if last.x < 0 else 0) if abs(last.x) > END_LINE_EXIT else None
+        winner = candidate_winner(group, duration)
         events.append(
             Rally(
                 start=max(0, group[0].time - 0.3),

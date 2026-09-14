@@ -1,9 +1,9 @@
 # Copyright (c) 2026 Connor Gasgarth
 """Validated API and analysis data."""
 
-from typing import Literal
+from typing import Literal, Self
 
-from pydantic import BaseModel, ConfigDict, Field
+from pydantic import BaseModel, ConfigDict, Field, model_validator
 
 
 class Contract(BaseModel):
@@ -35,10 +35,10 @@ class PlayerPose(Contract):
 
     player: int = Field(ge=0, le=1)
     state: Literal["observed", "partial", "held"] = "observed"
-    joints: list[Joint]
-    elbow: float | None = None
-    knee: float | None = None
-    stance: float | None = None
+    joints: list[Joint] = Field(min_length=17, max_length=17)
+    elbow: float | None = Field(default=None, ge=0, le=180)
+    knee: float | None = Field(default=None, ge=0, le=180)
+    stance: float | None = Field(default=None, ge=0)
 
 
 class Ball(Contract):
@@ -56,8 +56,8 @@ class Ball(Contract):
 class Frame(Contract):
     """Time-aligned detections; missing observations remain missing."""
 
-    time: float
-    players: list[PlayerPose]
+    time: float = Field(ge=0)
+    players: list[PlayerPose] = Field(max_length=2)
     ball: Ball | None = None
 
 
@@ -70,6 +70,14 @@ class Rally(Contract):
     winner: int | None = Field(default=None, ge=0, le=1)
     confidence: float = Field(ge=0, le=1)
     source: Literal["estimated", "reviewed"] = "estimated"
+
+    @model_validator(mode="after")
+    def ordered(self) -> Self:
+        """Require a positive rally duration."""
+        if self.end <= self.start:
+            msg = "Rally end must be after its start."
+            raise ValueError(msg)
+        return self
 
 
 class PlayerStats(Contract):

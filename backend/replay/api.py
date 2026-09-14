@@ -123,7 +123,7 @@ def upload(file: UploadFile) -> Replay:
 
 @app.post("/api/sample", status_code=201)
 def sample(sample_id: str = "rally-one") -> Replay:
-    """Import a verified 1080p, 30 fps example from the local sample cache."""
+    """Import a verified 1080p, 60 fps example from the local sample cache."""
     selected = next((item for item in samples() if item.id == sample_id), None)
     if selected is None:
         raise HTTPException(404, "Unknown sample.")
@@ -170,7 +170,7 @@ def start(replay_id: str) -> Replay:
         raise HTTPException(409, "Analysis is already running.")
     if len(replay.corners) != TABLE_CORNERS:
         raise HTTPException(422, "Select the four table corners first.")
-    replay.status, replay.progress, replay.analysis = "queued", 0, None
+    replay.status, replay.progress, replay.analysis, replay.error = "queued", 0, None, None
     store.save(replay, clear_analysis=True)
     POOL.submit(analyze, replay_id)
     return replay
@@ -182,7 +182,15 @@ def update_rallies(replay_id: str, events: list[Rally]) -> Replay:
     replay = required(replay_id)
     if replay.analysis is None or replay.status != "complete":
         raise HTTPException(409, "Complete analysis first.")
-    replay.analysis.rallies = events
+    duration = replay.duration * replay.fps / (replay.fps_override or replay.fps)
+    ordered = sorted(events, key=lambda event: event.start)
+    previous_end = 0.0
+    for event in ordered:
+        if event.end > duration or event.start < previous_end:
+            raise HTTPException(422, "Rallies must fit the replay and must not overlap.")
+        previous_end = event.end
+        event.source = "reviewed"
+    replay.analysis.rallies = ordered
     store.save(replay, replay.analysis)
     return replay
 

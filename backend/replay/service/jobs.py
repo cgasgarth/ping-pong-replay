@@ -80,7 +80,8 @@ def analyze(replay_id: str) -> None:
             device=f"YOLO26 + BlurBall: {vision.device.upper()} · Apple Vision: native",
             elapsed=round(time.monotonic() - start, 1),
             notes=[
-                "3D body motion uses inferred depth and an approximate camera focal length.",
+                "Visible joints follow image rays. Depth and hidden limbs are inferred.",
+                "Table calibration uses an approximate camera focal length.",
                 (
                     "BoT-SORT identity locks and confidence-weighted smoothing are applied. "
                     "Short occlusions retain a fading track."

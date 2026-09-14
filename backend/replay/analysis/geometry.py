@@ -75,8 +75,8 @@ class Camera:
         if not ok:
             msg = "Camera calibration failed. Check the table corners."
             raise ValueError(msg)
-        self.rotation = cv2.Rodrigues(rotation)[0]
-        self.translation = translation.reshape(3)
+        self.rotation: FloatArray = np.asarray(cv2.Rodrigues(rotation)[0], dtype=np.float64)
+        self.translation: FloatArray = np.asarray(translation, dtype=np.float64).reshape(3)
         self.origin = -self.rotation.T @ self.translation
         self.inverse = np.linalg.inv(self.intrinsics)
 

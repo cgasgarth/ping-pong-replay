@@ -36,10 +36,17 @@ def root_position(
         and not table_occludes(camera, float(points[index, 0]), float(points[index, 1]))
         for index in (15, 16)
     )
-    if previous is None or anchor is None or visible_feet:
+    if visible_feet:
         u = float((points[15, 0] + points[16, 0]) / 2 / camera.width)
         v = float((points[15, 1] + points[16, 1]) / 2 / camera.height)
         estimated = camera.on_plane(u, v)
+    elif previous is None or anchor is None:
+        estimated = camera.on_plane(
+            float((points[11, 0] + points[12, 0]) / 2 / camera.width),
+            float((points[11, 1] + points[12, 1]) / 2 / camera.height),
+            0.9,
+        )
+        estimated[1] = 0
     else:
         estimated = anchor.copy()
         if float(points[11, 2]) > MIN_CONFIDENCE and float(points[12, 2]) > MIN_CONFIDENCE:
@@ -68,29 +75,3 @@ def root_position(
         if distance > maximum:
             estimated = old + delta * maximum / distance
     return estimated
-
-
-def fit_root(
-    detection: Detection, camera: Camera, relative: FloatArray, initial: FloatArray
-) -> FloatArray:
-    """Fit floor translation from visible upper-body joints when feet are occluded."""
-    projection = camera.intrinsics @ np.column_stack((camera.rotation, camera.translation))
-    equations: list[list[float]] = []
-    targets: list[float] = []
-    for index in range(5, 17):
-        confidence = float(detection.keypoints[index, 2])
-        if confidence < MIN_CONFIDENCE:
-            continue
-        for axis in (0, 1):
-            pixel = float(detection.keypoints[index, axis])
-            row = projection[axis] - pixel * projection[2]
-            equations.append([float(row[0] * confidence), float(row[2] * confidence)])
-            targets.append(float(-np.dot(row, np.append(relative[index], 1)) * confidence))
-    minimum_equations = 8
-    if len(equations) < minimum_equations:
-        return initial
-    solution = np.linalg.lstsq(np.array(equations), np.array(targets), rcond=None)[0]
-    limit = 5.0
-    if np.isfinite(solution).all() and np.abs(solution).max() < limit:
-        return np.array([solution[0], 0, solution[1]], dtype=np.float64)
-    return initial

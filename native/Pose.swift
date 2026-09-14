@@ -33,7 +33,7 @@ while let line = readLine() {
                 for name in names {
                     let point = try observation.recognizedPoint(name)
                     let image = try observation.pointInImage(name)
-                    let position = point.position.columns.3
+                    let position = (observation.cameraOriginMatrix * point.position).columns.3
                     joints.append(Joint(x: position.x, y: -position.y, z: -position.z,
                         u: image.x, v: 1 - image.y, confidence: observation.confidence))
                 }

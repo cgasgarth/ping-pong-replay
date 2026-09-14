@@ -7,6 +7,7 @@ from typing import TYPE_CHECKING
 import numpy as np
 from scipy.ndimage import gaussian_filter1d, median_filter
 
+from replay.analysis.tracking.ground import ground_legs
 from replay.analysis.tracking.limbs import stabilize
 from replay.quality.measurements import measure
 
@@ -39,6 +40,7 @@ def clean_segment(poses: list[PlayerPose], times: list[float]) -> None:
             correction = delta * (maximum / distance - 1)
             smoothed[index] += correction
     stabilize(smoothed)
+    ground_legs(smoothed, weights)
     for index, pose in enumerate(poses):
         world: FloatArray = np.asarray(smoothed[index], dtype=np.float64)
         for joint_index, joint in enumerate(pose.joints):

@@ -13,9 +13,10 @@ from ultralytics import YOLO
 
 from replay.analysis.ball import BallDetector
 from replay.analysis.geometry import Camera, FloatArray, ImageArray, angle
+from replay.analysis.reconstruction.body import world_pose
 from replay.analysis.tracking.identity import PlayerLocks, detections
 from replay.analysis.tracking.limbs import retain_hidden
-from replay.analysis.tracking.root import fit_root, root_position, table_occludes
+from replay.analysis.tracking.root import root_position, table_occludes
 from replay.domain.models import Ball, Contract, Joint, PlayerPose
 
 if TYPE_CHECKING:
@@ -110,22 +111,7 @@ class Vision:
                 joint.z += float(shift[2])
             pose.state = "partial"
         else:
-            coordinates = np.array([[point.x, point.y, point.z] for point in result.joints])
-            right_axis = camera.rotation.T[:, 0].copy()
-            forward_axis = camera.rotation.T[:, 2].copy()
-            right_axis[1] = 0
-            forward_axis[1] = 0
-            right_axis /= np.linalg.norm(right_axis)
-            forward_axis /= np.linalg.norm(forward_axis)
-            rotated = (
-                coordinates[:, 0:1] * right_axis
-                - coordinates[:, 1:2] * [0, 1, 0]
-                + coordinates[:, 2:3] * forward_axis
-            )
-            relative: FloatArray = rotated - (rotated[15] + rotated[16]) / 2
-            if previous is None:
-                root = fit_root(detection, camera, relative, root)
-            world: FloatArray = relative + root
+            world = world_pose(result.joints, camera, detection, root)
             for index, joint in enumerate(result.joints):
                 joint.x, joint.y, joint.z = (
                     float(world[index, 0]),

@@ -11,6 +11,7 @@ from statistics import median
 from typing import TYPE_CHECKING
 
 from replay.domain import store
+from replay.quality.projection import reprojection
 
 if TYPE_CHECKING:
     from replay.domain.models import Replay
@@ -24,6 +25,7 @@ RATE_TOLERANCE = 0.1
 JOINT_COUNT = 17
 MAX_COURT_LENGTH = 8
 MAX_COURT_WIDTH = 5
+MAX_MEDIAN_REPROJECTION = 0.12
 
 
 def audit(replay: Replay) -> dict[str, object]:
@@ -101,9 +103,17 @@ def player_audits(replay: Replay, errors: list[str]) -> list[dict[str, object]]:
         invalid_bones = sum(not MIN_BONE <= value <= MAX_BONE for bone in lengths for value in bone)
         if invalid_bones:
             errors.append(f"Player {player + 1}: {invalid_bones} implausible limb lengths")
+        median_error, tail_error = reprojection(replay, player)
+        errors.extend(
+            [f"Player {player + 1} has excessive 3D-to-image projection error"]
+            if median_error > replay.height * MAX_MEDIAN_REPROJECTION
+            else []
+        )
         players.append(
             {
                 "player": player + 1,
+                "median_reprojection_px": median_error,
+                "p95_reprojection_px": tail_error,
                 "samples": len(samples),
                 "states": dict(states),
                 "max_root_speed_mps": round(max(speeds, default=0), 4),

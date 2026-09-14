@@ -31,17 +31,17 @@ def retain_hidden(index: int, joints: list[Joint], previous: PlayerPose, shift: 
 
 def stabilize(values: FloatArray) -> None:
     """Keep robust segment lengths while preserving measured joint directions."""
+    original = values.copy()
     for start, end in BONES:
         vectors = values[:, end] - values[:, start]
         lengths = np.linalg.norm(vectors, axis=1)
         supported = lengths > EPSILON
         if not supported.any():
             continue
-        length = float(np.median(lengths[supported]))
+        reference = np.linalg.norm(original[:, end] - original[:, start], axis=1)
+        length = float(np.median(reference[reference > EPSILON]))
         previous = vectors[np.argmax(supported)] / lengths[np.argmax(supported)]
         for index in range(len(values)):
             direction = vectors[index] / lengths[index] if supported[index] else previous
             values[index, end] = values[index, start] + direction * length
             previous = direction
-    # At least one ankle touches the floor; this does not change horizontal roots.
-    values[:, :, 1] -= np.minimum(values[:, 15, 1], values[:, 16, 1])[:, None]

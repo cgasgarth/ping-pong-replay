@@ -17,7 +17,7 @@ The service validates input quality, prepares browser-compatible playback, sched
 
 ## Analysis
 
-Separate models handle player detection, identity persistence, body pose, and ball tracking. Camera calibration relates observations to the table. Confidence-aware temporal processing reduces noise and retains short occlusions without assigning a spectator to a missing player.
+Separate models handle player detection, identity persistence, body pose, and ball tracking. Camera calibration relates observations to the table. Visible body joints are constrained by their image positions; inferred depth and leg constraints supply the hidden geometry. Confidence-aware temporal processing reduces noise and retains short occlusions without assigning a spectator to a missing player.
 
 A single camera cannot directly measure all depths. Reconstruction therefore keeps uncertainty explicit. Scores and serve markers are candidates that can be reviewed. Hidden joints and unsupported ball heights are not treated as ground-truth measurements.
 

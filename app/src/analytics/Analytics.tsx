@@ -176,13 +176,16 @@ export function Analytics({ replay }: { readonly replay: Replay }) {
               <line key={y} x1={0} x2={400} y1={y} y2={y} stroke="#e1e7d9" />
             ))}
             {metrics.map((metric, index) => (
-              <polyline
+              <path
                 key={index === 0 ? "near" : "far"}
-                points={metric.curve
+                d={metric.curve
                   .filter((_, pointIndex) => pointIndex % 2 === 0)
-                  .map(
-                    (point) => `${(point.time / duration) * 400},${95 - (point.angle / 180) * 90}`,
-                  )
+                  .map((point, pointIndex, curve) => {
+                    const previous = curve[pointIndex - 1];
+                    const command =
+                      previous === undefined || point.time - previous.time > 0.2 ? "M" : "L";
+                    return `${command}${(point.time / duration) * 400},${95 - (point.angle / 180) * 90}`;
+                  })
                   .join(" ")}
                 fill="none"
                 stroke={index === 0 ? "var(--player-one)" : "var(--player-two)"}

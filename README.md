@@ -13,7 +13,7 @@ bun run samples
 bun run dev
 ```
 
-[Install & local setup](documentation/install.md) · [Architecture](documentation/architecture.md) · [License](docs/legal/LICENSE)
+[Install & local setup](documentation/install.md) · [Architecture](documentation/architecture.md) · [Verification](docs/verification/README.md) · [License](docs/legal/LICENSE)
 
 <details>
 <summary>Match analytics</summary>

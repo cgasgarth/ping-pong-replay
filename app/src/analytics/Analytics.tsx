@@ -5,7 +5,7 @@ import type { SpeedUnit } from "./metrics";
 import { ballSpeed, playerMetrics, speedValue } from "./metrics";
 export function Analytics({ replay }: { readonly replay: Replay }) {
   const [unit, setUnit] = useState<SpeedUnit>(() =>
-    localStorage.getItem("rallylab-speed-unit") === "mph" ? "mph" : "kmh",
+    localStorage.getItem("rallylab-speed-unit") === "kmh" ? "kmh" : "mph",
   );
   const analysis = replay.analysis;
   const metrics = useMemo(
@@ -22,7 +22,7 @@ export function Analytics({ replay }: { readonly replay: Replay }) {
       <div className="section-heading">
         <div>
           <span className="eyebrow">FIND YOUR NEXT IMPROVEMENT</span>
-          <h2>Your game, decoded.</h2>
+          <h2>Match analysis</h2>
         </div>
         <div className="analytics-actions">
           <label className="unit-picker">

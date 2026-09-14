@@ -31,7 +31,7 @@ def test_hidden_feet_preserve_depth_while_hips_move_sideways() -> None:
     keypoints = np.zeros((17, 3))
     keypoints[11:13] = [pixel[0] / pixel[2], pixel[1] / pixel[2], 1]
     detection = Detection(1, (0, 0, 100, 200), keypoints, (2, 0), np.ones(96))
-    root = root_position(detection, camera, previous, 1 / 30)
+    root = root_position(detection, camera, previous, 1 / 30, np.array([2.0, 0, 0]))
     forward = camera.rotation.T[:, 2].copy()
     forward[1] = 0
     forward /= np.linalg.norm(forward)
@@ -57,3 +57,30 @@ def test_table_masks_confident_ankle_pixels() -> None:
             table_occludes(camera, float(pixel[0] / pixel[2]), float(pixel[1] / pixel[2]))
             is expected
         )
+
+
+def test_inferred_ankle_drift_cannot_feed_back_into_ground_anchor() -> None:
+    """A stationary image must keep a stationary root despite changing hidden 3D limbs."""
+    camera = Camera(
+        [
+            Point(x=x / 1920, y=y / 1080)
+            for x, y in [(735, 620), (786, 403), (1130, 405), (1178, 620)]
+        ],
+        1920,
+        1080,
+    )
+    projection = camera.intrinsics @ np.column_stack((camera.rotation, camera.translation))
+    pixel = projection @ np.array([2.0, 1.0, 0, 1])
+    u, v = float(pixel[0] / pixel[2]), float(pixel[1] / pixel[2])
+    previous = PlayerPose(
+        player=1,
+        joints=[Joint(x=2, y=1, z=0, u=u / 1920, v=v / 1080, confidence=1) for _ in range(17)],
+    )
+    keypoints = np.zeros((17, 3))
+    keypoints[11:13] = [u, v, 1]
+    detection = Detection(1, (0, 0, 100, 200), keypoints, (2, 0), np.ones(96))
+    anchor = np.array([2.0, 0, 0])
+    for index in range(120):
+        previous.joints[15].x = previous.joints[16].x = 2 + index * 0.5
+        anchor = root_position(detection, camera, previous, 1 / 30, anchor)
+    assert anchor == pytest.approx([2, 0, 0])

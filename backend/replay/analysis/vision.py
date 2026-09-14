@@ -52,6 +52,7 @@ class Vision:
         )
         self.locks = PlayerLocks()
         self.previous: dict[int, PlayerPose] = {}
+        self.roots: dict[int, FloatArray] = {}
         self.seen: dict[int, float] = {}
 
     def close(self) -> None:
@@ -95,13 +96,15 @@ class Vision:
             return None
         previous = self.previous.get(player)
         result = self.infer(image[y1:y2, x1:x2])
-        root = root_position(detection, camera, previous, time - self.seen.get(player, time))
+        previous_root = self.roots[player] if previous is not None else None
+        root = root_position(
+            detection, camera, previous, time - self.seen.get(player, time), previous_root
+        )
         if not result.joints:
             if previous is None:
                 return None
             pose = previous.model_copy(deep=True)
-            left, right = pose.joints[15:17]
-            shift = root - np.array([(left.x + right.x) / 2, 0, (left.z + right.z) / 2])
+            shift = root - self.roots[player]
             for joint in pose.joints:
                 joint.x += float(shift[0])
                 joint.z += float(shift[2])
@@ -139,7 +142,7 @@ class Vision:
                 ):
                     joint.confidence = 0
                 if previous is not None and joint.confidence < VISIBLE_JOINT:
-                    retain_hidden(index, result.joints, previous, root)
+                    retain_hidden(index, result.joints, previous, root - self.roots[player])
             left, right = result.joints[15:17]
             pose = PlayerPose(
                 player=player,
@@ -152,6 +155,7 @@ class Vision:
                 else "observed",
             )
         self.previous[player] = pose.model_copy(deep=True)
+        self.roots[player] = root.copy()
         self.seen[player] = time
         return pose
 

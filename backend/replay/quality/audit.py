@@ -22,6 +22,8 @@ MAX_BONE = 0.8
 MAX_GAP = 0.8
 RATE_TOLERANCE = 0.1
 JOINT_COUNT = 17
+MAX_COURT_LENGTH = 8
+MAX_COURT_WIDTH = 5
 
 
 def audit(replay: Replay) -> dict[str, object]:
@@ -94,6 +96,8 @@ def player_audits(replay: Replay, errors: list[str]) -> list[dict[str, object]]:
                 lengths[bone].append(math.dist((a.x, a.y, a.z), (b.x, b.y, b.z)))
         if speeds and max(speeds) > MAX_SPEED:
             errors.append(f"Player {player + 1} exceeds the root-motion speed limit")
+        if any(abs(x) > MAX_COURT_LENGTH or abs(z) > MAX_COURT_WIDTH for x, z in centers):
+            errors.append(f"Player {player + 1} leaves the supported court bounds")
         invalid_bones = sum(not MIN_BONE <= value <= MAX_BONE for bone in lengths for value in bone)
         if invalid_bones:
             errors.append(f"Player {player + 1}: {invalid_bones} implausible limb lengths")

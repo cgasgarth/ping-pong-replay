@@ -14,7 +14,7 @@ EPSILON = 1e-6
 PARENTS = {7: 5, 8: 6, 9: 7, 10: 8, 13: 11, 14: 12, 15: 13, 16: 14}
 
 
-def retain_hidden(index: int, joints: list[Joint], previous: PlayerPose, root: FloatArray) -> None:
+def retain_hidden(index: int, joints: list[Joint], previous: PlayerPose, shift: FloatArray) -> None:
     """Keep a hidden limb attached as its visible parent moves."""
     joint, old = joints[index], previous.joints[index]
     parent = PARENTS.get(index)
@@ -24,10 +24,9 @@ def retain_hidden(index: int, joints: list[Joint], previous: PlayerPose, root: F
         joint.y = old.y + anchor.y - old_anchor.y
         joint.z = old.z + anchor.z - old_anchor.z
     else:
-        left, right = previous.joints[15:17]
-        joint.x = old.x + float(root[0]) - (left.x + right.x) / 2
+        joint.x = old.x + float(shift[0])
         joint.y = old.y
-        joint.z = old.z + float(root[2]) - (left.z + right.z) / 2
+        joint.z = old.z + float(shift[2])
 
 
 def stabilize(values: FloatArray) -> None:

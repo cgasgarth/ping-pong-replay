@@ -23,7 +23,11 @@ def table_occludes(camera: Camera, u: float, v: float) -> bool:
 
 
 def root_position(
-    detection: Detection, camera: Camera, previous: PlayerPose | None, elapsed: float
+    detection: Detection,
+    camera: Camera,
+    previous: PlayerPose | None,
+    elapsed: float,
+    anchor: FloatArray | None,
 ) -> FloatArray:
     """Avoid jumping to extrapolated feet when the lower body leaves the picture."""
     points = detection.keypoints
@@ -32,13 +36,12 @@ def root_position(
         and not table_occludes(camera, float(points[index, 0]), float(points[index, 1]))
         for index in (15, 16)
     )
-    if previous is None or visible_feet:
+    if previous is None or anchor is None or visible_feet:
         u = float((points[15, 0] + points[16, 0]) / 2 / camera.width)
         v = float((points[15, 1] + points[16, 1]) / 2 / camera.height)
         estimated = camera.on_plane(u, v)
     else:
-        left, right = previous.joints[15:17]
-        estimated = np.array([(left.x + right.x) / 2, 0, (left.z + right.z) / 2])
+        estimated = anchor.copy()
         if float(points[11, 2]) > MIN_CONFIDENCE and float(points[12, 2]) > MIN_CONFIDENCE:
             hip_left, hip_right = previous.joints[11:13]
             height = (hip_left.y + hip_right.y) / 2
@@ -50,13 +53,15 @@ def root_position(
             lateral = camera.rotation.T[:, 0].copy()
             lateral[1] = 0
             lateral /= np.linalg.norm(lateral)
-            displacement = hip - np.array(
-                [(hip_left.x + hip_right.x) / 2, height, (hip_left.z + hip_right.z) / 2]
+            previous_projection = camera.on_plane(
+                (hip_left.u + hip_right.u) / 2,
+                (hip_left.v + hip_right.v) / 2,
+                height,
             )
+            displacement = hip - previous_projection
             estimated += lateral * float(np.dot(displacement, lateral))
-    if previous is not None:
-        left, right = previous.joints[15:17]
-        old = np.array([(left.x + right.x) / 2, 0, (left.z + right.z) / 2])
+    if anchor is not None:
+        old = anchor
         delta = estimated - old
         distance = float(np.linalg.norm(delta))
         maximum = MAX_GROUND_SPEED * min(elapsed, 0.1) + 0.04

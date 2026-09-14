@@ -9,7 +9,7 @@ from pydantic import BaseModel, ConfigDict, Field, model_validator
 class Contract(BaseModel):
     """Reject unknown fields and non-finite measurements."""
 
-    model_config = ConfigDict(extra="forbid", allow_inf_nan=False)
+    model_config = ConfigDict(extra="forbid", allow_inf_nan=False, validate_assignment=True)
 
 
 class Point(Contract):
